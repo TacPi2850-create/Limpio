@@ -7,28 +7,27 @@ from datetime import datetime, timedelta
 def generate_schedule():
     start_date = datetime.strptime("2025-03-23", "%Y-%m-%d").date()  # prima domenica
     weeks = 52
-    persons = ["JL1", "JL2"]
+    alternanza = ["JL1", "JL2"]  # si alternano la domenica
     tasks = ["🛁 Bagno", "🍽️ Cucina"]
 
     data = []
 
     for i in range(weeks):
         sunday = start_date + timedelta(weeks=i)
-        saturday = sunday - timedelta(days=1)
         wednesday = sunday - timedelta(days=4)
 
-        # Mercoledì: A3 pulisce il bagno
-        data.append({"Data": wednesday, "Persona": "A3", "Mansione": "🛁 Bagno"})
+        # Mercoledì: A3 fa bagno e cucina
+        data.append({"Data": wednesday, "Persona": "AT", "Mansione": "🛁 Bagno"})
+        data.append({"Data": wednesday, "Persona": "AT", "Mansione": "🍽️ Cucina"})
 
-        # Sabato: 1 persona di JL1 o JL2 fa il bagno
-        saturday_person = persons[i % 2]
-        data.append({"Data": saturday, "Persona": saturday_person, "Mansione": "🛁 Bagno"})
-
-        # Domenica: l'altra persona fa la cucina
-        sunday_person = persons[(i + 1) % 2]
-        data.append({"Data": sunday, "Persona": sunday_person, "Mansione": "🍽️ Cucina"})
+        # Domenica: JL1 e JL2 si alternano ogni settimana, facendo un task ciascuno
+        person1 = alternanza[i % 2]
+        person2 = alternanza[(i + 1) % 2]
+        data.append({"Data": sunday, "Persona": person1, "Mansione": "🛁 Bagno"})
+        data.append({"Data": sunday, "Persona": person2, "Mansione": "🍽️ Cucina"})
 
     return pd.DataFrame(data)
+
 
 # Creiamo il calendario delle pulizie
 df = generate_schedule()
@@ -46,7 +45,7 @@ st.markdown("""
         .sunday { background-color: #1C1C1C !important; font-weight: bold; border: 2px solid #FFFFFF; }
         .task-person-jl1 { color: #FFD700; font-weight: bold; }
         .task-person-jl2 { color: #00FA9A; font-weight: bold; }
-        .task-person-a3 { color: #FF69B4; font-weight: bold; }
+        .task-person-at { color: #FF69B4; font-weight: bold; }
         .saturday { background-color: #2E2E2E !important; }
         .wednesday { background-color: #424949 !important; }
         .stSelectbox label, .stDateInput label { color: #0D47A1 !important; font-weight: bold; }
